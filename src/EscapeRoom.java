@@ -9,17 +9,17 @@ public class EscapeRoom {
        Bookshelf: The bookcase will begin to open and show a safe. Enter the code (it will be random) to open it to get the key.
        Vent: Opening the vent you will find a lever.
        Door: The key you get from the safe will enter the door, letting you escape. WIN!
-       Bed: Will have to pick up bed-sheets to find a screwdriver. It will also have a code random number (5674).
+       Bed: Will have to pick up bedsheets to find a screwdriver. It will also have a code random number (5674).
 
      */
     static JPanel panel;
     static JLabel setting;
-    static JButton start, back, bed, bookshelf, vent, door, move, grab, unscrew, pull, enter, book, safe;
+    static JButton start, back, bed, bookshelf, vent, door, move, grab, unscrew, pull, enter, book, safe, take, use;
     static JTextField code;
 
     static boolean screwdriver = false;
     static boolean lever = false;
-    static int correctCode = 5754;
+    static boolean key = false;
 
 
 
@@ -44,12 +44,14 @@ public class EscapeRoom {
         grab = new JButton("Grab it");
         unscrew = new JButton("Unscrew it");
         bookshelf = new JButton("Bookshelf");
-        book = new JButton("Pull book");
+        book = new JButton("Pull Book");
         enter = new JButton("Enter Code");
         vent = new JButton("Vent");
         pull = new JButton("Pull");
         door = new JButton("Door");
         safe = new JButton("Safe");
+        take = new JButton("Take Key");
+        use = new JButton("Use Key");
 
 
 
@@ -65,15 +67,21 @@ public class EscapeRoom {
         unscrew.addActionListener(new unscrewVentListener());
         vent.addActionListener(new ventListener());
         pull.addActionListener(new pullLeverListener());
+        use.addActionListener(new keyListener());
+        take.addActionListener(new takeListener());
         bookshelf.addActionListener(new bookshelfListener());
         safe.addActionListener(new safeListener());
+        enter.addActionListener(new safeCodeListener());
+        door.addActionListener(new doorListener());
 
         panel.add(start);
 
 
 
+
         frame.add(panel);
         frame.setVisible(true);
+
     }
 
     private static class startListener implements ActionListener {
@@ -83,7 +91,7 @@ public class EscapeRoom {
             final String html =  "<html><body style='width: %1spx'>%1s";
 
             Runnable r = () -> {
-                        setting.setText(String.format(html, 250, s));
+                setting.setText(String.format(html, 250, s));
             };
             SwingUtilities.invokeLater(r);
             panel.remove(start);
@@ -112,6 +120,11 @@ public class EscapeRoom {
             panel.remove(unscrew);
             panel.remove(book);
             panel.remove(pull);
+            panel.remove(enter);
+            panel.remove(safe);
+            panel.remove(door);
+            panel.remove(take);
+            panel.remove(use);
             panel.add(setting);
             panel.add(bed);
             panel.add(bookshelf);
@@ -149,7 +162,7 @@ public class EscapeRoom {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            final String s = ("You moved the bedsheets and see a code that says " + correctCode + " and a screwdriver.");
+            final String s = ("You moved the bedsheets and see a code that says " + 5674 + " and a screwdriver.");
             final String html =  "<html><body style='width: %1spx'>%1s";
 
             Runnable r = () -> {
@@ -208,7 +221,7 @@ public class EscapeRoom {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(screwdriver == true){
+            if(screwdriver) {
                 final String s = (" It came out! There's a lever inside.");
                 final String html =  "<html><body style='width: %1spx'>%1s";
 
@@ -219,7 +232,7 @@ public class EscapeRoom {
                 panel.remove(unscrew);
                 panel.add(pull);
                 panel.updateUI();
-            }else{
+            } else {
                 final String s = ("It wont budge.");
                 final String html =  "<html><body style='width: %1spx'>%1s";
 
@@ -322,21 +335,110 @@ public class EscapeRoom {
             panel.add(code);
             code.setBounds(100, 190, 150, 25);
             panel.add(enter);
+            panel.remove(back);
+
         }
     }
 
+    private static class safeCodeListener implements ActionListener{
 
+        @Override
+        public void actionPerformed(ActionEvent e) {
 
+            int correctCode = Integer.parseInt(code.getText());
 
+            if(correctCode == 5674){
+                final String s = ("It opened! Theres a key inside.");
+                final String html =  "<html><body style='width: %1spx'>%1s";
 
+                Runnable r = () -> {
+                    setting.setText(String.format(html, 250, s));
+                };
+                SwingUtilities.invokeLater(r);
+                panel.remove(enter);
+                panel.remove(code);
+                panel.add(take);
+                panel.updateUI();
+            }else{
+                final String s = ("Invalid Code.");
+                final String html =  "<html><body style='width: %1spx'>%1s";
 
+                Runnable r = () -> {
+                    setting.setText(String.format(html, 250, s));
+                };
+                SwingUtilities.invokeLater(r);
+                panel.remove(enter);
+                panel.remove(code);
+                panel.updateUI();
+            }
+                panel.add(back);
+        }
+    }
 
+    private static class doorListener implements ActionListener{
 
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            final String s = ("The door is locked and seems to need a key to open it. ");
+            final String html =  "<html><body style='width: %1spx'>%1s";
 
+            Runnable r = () -> {
+                setting.setText(String.format(html, 250, s));
+            };
+            SwingUtilities.invokeLater(r);
+            panel.remove(bed);
+            panel.remove(bookshelf);
+            panel.remove(vent);
+            panel.remove(door);
+            panel.add(back);
+            panel.add(use);
+            panel.updateUI();
 
+        }
+    }
 
+    private static class takeListener implements ActionListener{
 
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            final String s = ("You took the Key!");
+            final String html =  "<html><body style='width: %1spx'>%1s";
 
+            Runnable r = () -> {
+                setting.setText(String.format(html, 250, s));
+            };
+            SwingUtilities.invokeLater(r);
+            key = true;
+            panel.remove(take);
+            panel.updateUI();
+        }
+    }
 
+    private static class keyListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if(key){
+                final String s = ("It opened! FREEDOM!");
+                final String html =  "<html><body style='width: %1spx'>%1s";
+
+                Runnable r = () -> {
+                    setting.setText(String.format(html, 250, s));
+                };
+                SwingUtilities.invokeLater(r);
+                panel.remove(use);
+                panel.remove(back);
+            }else{
+                final String s = ("You dont have a key.");
+                final String html =  "<html><body style='width: %1spx'>%1s";
+
+                Runnable r = () -> {
+                    setting.setText(String.format(html, 250, s));
+                };
+                SwingUtilities.invokeLater(r);
+
+            }
+        }
+    }
 
 }
